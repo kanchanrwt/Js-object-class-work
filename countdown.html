@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stopwatch</title>
+<title>Countdown Timer</title>
 <style>
     #display {
         font-size: 24px;
@@ -22,36 +22,41 @@
 <button id="resetButton">Reset</button>
 
 <script>
-    let startTime;
-    let elapsedTime = 0;
     let timerInterval;
+    let timeLeft = 0;
 
-    function startStopwatch() {
-        startTime = Date.now() - elapsedTime;
-        timerInterval = setInterval(updateDisplay, 10);
+    function startCountdown(durationInSeconds) {
+        timeLeft = durationInSeconds;
+        timerInterval = setInterval(updateDisplay, 1000);
         document.getElementById('startStopButton').textContent = 'Stop';
     }
 
-    function stopStopwatch() {
+    function stopCountdown() {
         clearInterval(timerInterval);
         document.getElementById('startStopButton').textContent = 'Start';
     }
 
-    function resetStopwatch() {
+    function resetCountdown() {
         clearInterval(timerInterval);
-        elapsedTime = 0;
+        timeLeft = 0;
         updateDisplay();
         document.getElementById('startStopButton').textContent = 'Start';
     }
 
     function updateDisplay() {
-        const elapsedTimeInSeconds = Math.floor((Date.now() - startTime) / 1000);
-        const hours = Math.floor(elapsedTimeInSeconds / 3600);
-        const minutes = Math.floor((elapsedTimeInSeconds % 3600) / 60);
-        const seconds = elapsedTimeInSeconds % 60;
+        const hours = Math.floor(timeLeft / 3600);
+        const minutes = Math.floor((timeLeft % 3600) / 60);
+        const seconds = timeLeft % 60;
 
         const displayString = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
         document.getElementById('display').textContent = displayString;
+
+        if (timeLeft === 0) {
+            stopCountdown();
+            alert("Countdown finished!");
+        } else {
+            timeLeft--;
+        }
     }
 
     function pad(number) {
@@ -60,13 +65,18 @@
 
     document.getElementById('startStopButton').addEventListener('click', function() {
         if (timerInterval) {
-            stopStopwatch();
+            stopCountdown();
         } else {
-            startStopwatch();
+            const duration = parseInt(prompt("Enter duration in seconds:"));
+            if (!isNaN(duration) && duration > 0) {
+                startCountdown(duration);
+            } else {
+                alert("Please enter a valid duration.");
+            }
         }
     });
 
-    document.getElementById('resetButton').addEventListener('click', resetStopwatch);
+    document.getElementById('resetButton').addEventListener('click', resetCountdown);
 </script>
 </body>
 </html>
